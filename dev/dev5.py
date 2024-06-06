@@ -48,11 +48,38 @@ class Relu:
 
         return dx
 
-x = np.array([[1.0, -0.5], [-2.0, 3.0]])
-relu_layer = Relu()
-ret = relu_layer.forward(x)
-print(ret)
+class Sigmoid:
+    def __init__(self):
+        self.out = None
 
-dret = np.array([[1.0, 1.0], [1.0, 1.0]])
-dx = relu_layer.backward(dret)
-print(dx)
+    def forward(self, x):
+        out = 1 / (1 + np.exp(-x))
+        self.out = out
+
+        return out
+    
+    def backward(self, dout):
+        dx = dout * self.out * (1 - self.out)
+
+        return dx
+    
+class Affine:
+    def __init__(self, W, b):
+        self.W = W
+        self.b = b
+        self.x = None
+        self.dW = None
+        self.db = None
+
+    def forward(self, x):
+        self.x = x
+        out = np.dot(x, self.W) + self.b
+        
+        return out
+    
+    def backward(self, dout):
+        dx = np.dot(dout, self.W.T)
+        self.dW = np.dot(self.x.T, dout)
+        self.db = np.sum(dout, axis = 0)
+
+        return dx
