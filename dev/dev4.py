@@ -97,7 +97,7 @@ class TwoLayerNet:
 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize = True, one_hot_label = True)
 
-train_loss_list = []
+"""train_loss_list = []
 
 iters_num = 1000
 train_size = x_train.shape[0]
@@ -128,4 +128,4 @@ for i in range(iters_num):
 
 x = np.arange(len(train_loss_list))
 plt.plot(x, train_loss_list)
-plt.show()
+plt.show()"""
