@@ -159,7 +159,31 @@ class TwoLayerNet:
         grads['b2'] = self.layers['Affine2'].db
 
         return grads
+
+class SGD:
+    def __init__(self, lr=0.01):
+        self.lr = lr
     
+    def update(self, params, grads):
+        for key in params.keys():
+            params[key] -= self.lr * grads[key]
+
+class Momentum:
+    def __init__(self, lr=0.01, momentum=0.9):
+        self.lr = lr
+        self.momentum = momentum
+        self.v = None
+
+    def update(self, params, grads):
+        if self.v is None:
+            self.v = {}
+            for key, val in params.items():
+                self.v[key] = np.zeros_like(val)
+        
+        for key in params.keys():
+            self.v[key] = self.momentum * self.v[key] - self.lr * grads[key]
+            params[key] += self.v[key]
+
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
 
 test_acc_list = []
@@ -175,6 +199,7 @@ hidden_size = 50
 output_size = t_train.shape[1]
 
 network = TwoLayerNet(input_size, hidden_size, output_size)
+optimizer = Momentum()
 
 for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
@@ -182,9 +207,8 @@ for i in range(iters_num):
     t_batch = t_train[batch_mask]
 
     grad = network.gradient(x_batch, t_batch)
-
-    for key in ('W1', 'b1', 'W2', 'b2'):
-        network.params[key] -= lr * grad[key]
+    params = network.params
+    optimizer.update(params, grad)
     
     if i % iter_per_epoch == 0:
         print(i)
