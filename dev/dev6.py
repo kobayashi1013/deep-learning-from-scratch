@@ -199,7 +199,7 @@ hidden_size = 50
 output_size = t_train.shape[1]
 
 network = TwoLayerNet(input_size, hidden_size, output_size)
-optimizer = Momentum()
+optimizer = SGD()
 
 for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
