@@ -184,6 +184,21 @@ class Momentum:
             self.v[key] = self.momentum * self.v[key] - self.lr * grads[key]
             params[key] += self.v[key]
 
+class AdaGrad:
+    def __init__(self, lr=0.01):
+        self.lr = lr
+        self.h = None
+        
+    def update(self, params, grads):
+        if self.h is None:
+            self.h = {}
+            for key, val in params.items():
+                self.h[key] = np.zeros_like(val)
+            
+        for key in params.keys():
+            self.h[key] += grads[key] * grads[key]
+            params[key] -= self.lr * grads[key] / (np.sqrt(self.h[key]) + 1e-7)
+
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
 
 test_acc_list = []
@@ -199,7 +214,7 @@ hidden_size = 50
 output_size = t_train.shape[1]
 
 network = TwoLayerNet(input_size, hidden_size, output_size)
-optimizer = SGD()
+optimizer = AdaGrad()
 
 for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
